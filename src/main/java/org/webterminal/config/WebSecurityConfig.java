@@ -17,33 +17,40 @@
  */
 package org.webterminal.config;
 
-import org.webterminal.util.CsvAuthFileLoader;
+
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-//import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.webterminal.entity.UserRepository;
+import org.webterminal.service.impl.UserDetailsServiceImpl;
+import org.webterminal.user.util.CreateDefaultUser;
 
+@Slf4j
 @Configuration
 @EnableWebSecurity
-//@EnableGlobalMethodSecurity(prePostEnabled = true)
-//@EnableGlobalMethodSecurity(prePostEnabled = true, proxyTargetClass = true)
 public class WebSecurityConfig {
-
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(WebSecurityConfig.class);
 
     @Value("${webterminal.acl}")
     private String acl;
 
-    @Value("${webterminal.userFile}")
-    private String userFile;
+    private final UserDetailsServiceImpl userDetailsService;
+
+
+    @Autowired
+    public WebSecurityConfig(UserDetailsServiceImpl userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -78,20 +85,13 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-        logger.debug("AUTH userFile [{}]", userFile);
-        
-        InMemoryUserDetailsManager mgr = new InMemoryUserDetailsManager();
-        
-        CsvAuthFileLoader watchFile = new CsvAuthFileLoader(userFile, mgr, passwordEncoder);
-        watchFile.reload();
-        watchFile.start();
-        
-        return mgr;
+    public AuthenticationManager authenticationManager(HttpSecurity httpSecurity) throws Exception {
+        AuthenticationManagerBuilder auth = httpSecurity.getSharedObject(AuthenticationManagerBuilder.class);
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+        return auth.build();
     }
-    
+
     /**
-     *
      * @return
      */
     @Bean
