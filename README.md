@@ -10,7 +10,7 @@ This project is based on the original **WebTerminal** project developed by [zpgu
 기본의 zpgu님의 프로젝트를 MySQL과 연동했습니다. 
 
 
-저장된 유저정보를 통하여 Spring Security를 통하여 인증하고 접근하는 기능을 추가했습니다.
+저장된 유저 정보를 통하여 Spring Security를 통하여 인증하고 접근하는 기능을 추가했습니다.
 
 
 배우고 있는 학생이라 미숙한 부분은 가르침을 부탁드립니다. 
