@@ -1,6 +1,7 @@
-package org.webterminal.entity;
+package org.webterminal.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.webterminal.entity.UserEntity;
 
 import java.util.Optional;
 
