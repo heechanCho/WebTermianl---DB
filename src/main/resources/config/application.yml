@@ -36,9 +36,9 @@ spring:
     resources:
       cache.period: 1d
   datasource:
-    url: jdbc:mysql://localhost:3306/webTerminal_user
-    username: user
-    password: userooopklj
+    url: jdbc:mysql://localhost:3306/your_Database
+    username: your_username
+    password: your_password
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
